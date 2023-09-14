@@ -66,19 +66,55 @@
         </div>
     }
 </div>
-
-<script>
+@section Scripts{}
     $(document).ready(function () {
-        $("#filterText").on("keyup", function () {
+    function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+    $("#filterText").on("input", function () {
             var filterValue = $(this).val().toLowerCase();
-            $("#videoCardsContainer .card").each(function () {
-                var cardTitle = $(this).find(".card-title").text().toLowerCase();
-                if (cardTitle.indexOf(filterValue) > -1) {
-                    $(this).removeClass("filtered-card").slideDown("fast");
-                } else {
-                    $(this).addClass("filtered-card").slideUp("fast");
+
+        // Get the JWT token from a cookie (assuming it's stored in a cookie named "AuthToken")
+        var token = getCookie("AuthToken"); // Implement the getCookie function accordingly
+
+        // Send an AJAX request to filter the videos based on the input
+        $.ajax({
+            url: '/api/videos/filter',
+            type: 'GET',
+            data: { filter: filterValue },
+            headers: {
+                'Authorization': 'Bearer ' + token // Include the token in the request headers
+            },
+            success: function (filteredVideos) {
+                // Clear the current video container
+                $("#videoCardsContainer").empty();
+                console.log(token);
+
+                // Append the filtered videos to the container
+                $.each(filteredVideos, function (index, video) {
+                    var imageUrl = video.ImageId ? `/api/images/${video.ImageId}` : "/img/default-image.jpg";
+
+                    var videoCard = `<div class="col-md-4 mb-4">
+    <div class="card">
+        <img src="${imageUrl}" class="card-img-top" alt="Video Thumbnail">
+        <div class="card-body">
+            <h5 class="card-title">${video.Name}</h5>
+            <p class="card-text">${video.Description}</p>
+            <a href="/User/VideoDetails/${video.Id}" class="btn btn-primary">View Details</a>
+        </div>
+    </div>
+</div>`;
+
+                    $("#videoCardsContainer").append(videoCard);
+                });
+            },
+            error: function (error) {
+                console.error(error);
                 }
             });
         });
     });
-</script>
+}
