@@ -1,0 +1,8 @@
+﻿@{
+    ViewBag.Title = "Send All";
+    Layout = ViewContext.HttpContext.Session.GetString("AuthToken") == null ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<h1>Send All Notifications</h1>
+<p>@ViewData["ApiResponse"]</p>
+<a asp-controller="NotificationStatic" asp-action="Index">Back to Index</a>

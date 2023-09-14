@@ -1,0 +1,58 @@
+﻿@model DAL.BLModels.BLVideo
+@{
+    ViewData["Title"] = "Video Details";
+    Layout = ViewContext.HttpContext.Session.GetString("AuthToken") == null ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    var image = ViewData["image"] as DAL.BLModels.BLImage ?? new DAL.BLModels.BLImage();
+}
+
+<h2 class="mt-4">Video Details</h2>
+<a href="@Url.Action("VideoSelectionIndex", "User")" class="btn btn-primary mb-4">Back to Video Selection</a>
+<div class="card mb-3">
+    <div class="row no-gutters">
+        <div class="col-md-4">
+            <img src="@image.Content" class="card-img video-thumbnail" alt="Video Thumbnail">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h3 class="card-title">@Model.Name</h3>
+                <p class="card-text">@Model.Description</p>
+                <p class="card-text text-muted">Total Seconds: @Model.TotalSeconds</p>
+                @if (!string.IsNullOrEmpty(Model.StreamingUrl) && (Model.StreamingUrl.StartsWith("http://") || Model.StreamingUrl.StartsWith("https://")))
+                {
+                    <a href="@Model.StreamingUrl" class="btn btn-outline-success" target="_blank">Start Playing</a>
+                }
+                else
+                {
+                    <p>Invalid streaming URL</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .video-thumbnail {
+        object-fit: cover;
+        height: 100%;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+</style>

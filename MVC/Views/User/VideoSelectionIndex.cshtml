@@ -1,0 +1,84 @@
+﻿@model List<DAL.BLModels.BLVideo>
+@{
+    ViewData["Title"] = "Video Selection";
+    Layout = ViewContext.HttpContext.Session.GetString("AuthToken") == null ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<style>
+    .card {
+        height: 100%;
+    }
+
+    .card-img-top {
+        object-fit: cover;
+        height: 200px;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        margin-top: 0.5rem;
+    }
+
+    .card-text {
+        margin-bottom: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .filtered-card {
+        display: none;
+    }
+
+    .video-cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 15px;
+    }
+</style>
+
+<h2>Video Selection Page</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <label for="filterText">Filter by Video Name:</label>
+        <input type="text" class="form-control" id="filterText" placeholder="Enter video name...">
+    </div>
+</div>
+
+<div class="row mt-4" id="videoCardsContainer">
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        var video = Model[i];
+        var imageContent = ViewData["images"] as List<DAL.BLModels.BLImage> ?? new List<DAL.BLModels.BLImage>();
+        var imageUrl = i < imageContent.Count ? imageContent[i].Content : "/img/default-image.jpg";
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="@imageUrl" class="card-img-top" alt="Video Thumbnail">
+                <div class="card-body">
+                    <h5 class="card-title">@video.Name</h5>
+                    <p class="card-text">@video.Description</p>
+                    <a href="@Url.Action("VideoDetails", "User", new { id = video.Id })" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#filterText").on("keyup", function () {
+            var filterValue = $(this).val().toLowerCase();
+            $("#videoCardsContainer .card").each(function () {
+                var cardTitle = $(this).find(".card-title").text().toLowerCase();
+                if (cardTitle.indexOf(filterValue) > -1) {
+                    $(this).removeClass("filtered-card").slideDown("fast");
+                } else {
+                    $(this).addClass("filtered-card").slideUp("fast");
+                }
+            });
+        });
+    });
+</script>

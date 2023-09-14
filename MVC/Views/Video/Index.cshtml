@@ -1,0 +1,29 @@
+﻿@model List<DAL.BLModels.BLVideo>
+@{
+    //var genres = ViewData["genres"] as List<DAL.BLModels.BLGenre>;
+    var genres = ViewData["genres"] as List<DAL.DALModels.Genre>;
+    //Layout = ViewContext.HttpContext.Session.GetString("AuthToken") == null ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    Layout = "";
+    var images = ViewData["images"] as List<DAL.BLModels.BLImage>;
+}
+
+<div class="container" id="resultsContainer">
+    @Html.Partial("VideoPartialView.cshtml", Model)
+</div>
+@section Scripts {
+    <script>
+        $('#filterForm').on('submit', function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: this.action,
+                method: this.method,
+                data: $(this).serialize(),
+                success: function (data) {
+                    $('#resultsContainer').html(data);
+                }
+            });
+        });
+                });
+    </script>
+}

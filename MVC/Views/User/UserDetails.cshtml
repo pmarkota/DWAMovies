@@ -1,0 +1,73 @@
+﻿@using System.IdentityModel.Tokens.Jwt;
+@using DAL.BLModels;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var jwtToken = ViewContext.HttpContext.Session.GetString("AuthToken");
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var jwtTokenObject = tokenHandler.ReadJwtToken(jwtToken);
+    var usernameClaim = jwtTokenObject.Claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+    var users = ViewData["Users"] as List<BLUser>;
+    var user = users.FirstOrDefault(u => u.Username == usernameClaim);
+}
+
+<div class="container">
+    <h1>Welcome, @user.FirstName</h1>
+
+    <div class="alert @if (user.IsConfirmed) {
+    <text> alert-success </text>
+ } else {
+    <text> alert-danger </text>
+ }" role="alert">
+        @if (user.IsConfirmed)
+        {
+            <span class="text-success">Confirmed</span>
+        }
+        else
+        {
+            <span class="text-danger">Not Confirmed</span>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <!-- User's profile details -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Profile Details</h5>
+                    <p class="card-text">
+                        Username: @user.Username<br />
+                        Email: @user.Email<br />
+                        <!-- Add more profile details here -->
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <!-- Other elements or actions -->
+            <!-- Example: Change password form -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Change Password</h5>
+                    <form asp-action="ChangePassword" method="post">
+                        <div class="form-group">
+                            <label for="oldPassword">Old Password</label>
+                            <input type="password" class="form-control" id="oldPassword" name="OldPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" name="NewPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="ConfirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

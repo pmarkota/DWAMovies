@@ -1,0 +1,79 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var genres = ViewData["genres"] as List<DAL.DALModels.Genre>; Layout = ViewContext.HttpContext.Session.GetString("AuthToken") == null ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@model List<DAL.BLModels.BLVideo>
+<h1 class="mt-4 mb-4">Video List</h1>
+
+<div class="filter-form mb-4">
+    <form id="filterForm" asp-action="FilterVideos" method="post" class="form-inline">
+        <div class="form-group">
+            <label for="videoName" class="mr-2">Video Name:</label>
+            <input type="text" id="videoName" name="videoName" class="form-control mr-2" />
+        </div>
+
+        <div class="form-group">
+            <label for="genreName" class="mr-2">Genre Name:</label>
+            <input type="text" id="genreName" name="genreName" class="form-control mr-2" />
+        </div>
+
+        <div class="form-group">
+            <label for="pageSize" class="mr-2">Page Size:</label>
+            <input type="number" id="pageSize" name="pageSize" value="10" class="form-control mr-2" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="page" class="mr-2">Page:</label>
+            <input type="number" id="page" name="page" value="1" class="form-control mr-2" />
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="apply-filters">Apply Filters</button>
+    </form>
+</div>
+
+<table class="table table-striped table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Genre</th>
+            <th>Duration</th>
+            <th>Streaming Url</th>
+            <th>Image Id</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var video in Model)
+        {
+            var streamingUrl = video.StreamingUrl;
+            <tr>
+                <td>@video.Name</td>
+                <td>@video.Description</td>
+                <td>       
+                    @{
+                        var genre = genres.FirstOrDefault(g => g.Id == video.GenreId);
+                        if (genre != null)
+                        {
+                            @genre.Name
+                        }
+                    }
+                </td>
+                <td>@video.TotalSeconds</td>
+                <td>
+                    <a href="@(streamingUrl.StartsWith("http") ? streamingUrl : "http://" + streamingUrl)" target="_blank" class="btn btn-primary btn-sm">Watch Now</a>
+                </td>
+
+                <td>@video.ImageId</td>
+                <td>
+                    <a href="@Url.Action("Edit", "Video", new { id = video.Id })" class="btn btn-info btn-sm">Edit</a>
+                    <a href="@Url.Action("Delete", "Video", new { id = video.Id })" class="btn btn-info btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Create", "Video")" class="btn btn-primary">Create Video</a>

@@ -1,0 +1,51 @@
+﻿@*
+    var notificationCount = ViewData["ApiResponse"];
+*@
+@{
+ViewBag.Title = "Index";
+    Layout = ViewContext.HttpContext.Session.GetString("AuthToken") == null ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    var notificationCount = ViewData["ApiResponse"];
+}
+<h1>Index</h1>
+<p>Unsent Notification Count: @notificationCount</p>
+<button type="button" onclick="location.href='@Url.Action("SendAll", "NotificationStatic")'" class="btn btn-primary">
+    Send All
+</button>
+
+
+<div id="notificationData"></div>
+<button id="saveToLocalBtn" class="btn btn-secondary">Save to Local Storage</button>
+
+@section Scripts {
+    <script>
+        // Function to save notification data to local storage
+        function saveNotificationData(data) {
+            localStorage.setItem('notificationData', JSON.stringify(data));
+        }
+
+        // Function to retrieve and display notification data from local storage
+        function displayNotificationData() {
+            var savedData = localStorage.getItem('notificationData');
+            if (savedData) {
+                var parsedData = JSON.parse(savedData);
+                var notificationDataDiv = document.getElementById('notificationData');
+                notificationDataDiv.innerHTML = '<h2>Saved Notification Data</h2>';
+
+                for (var i = 0; i < parsedData.length; i++) {
+                    notificationDataDiv.innerHTML += '<p>' + parsedData[i] + '</p>';
+                }
+            }
+        }
+
+        // Function to trigger saving data to local storage
+        document.getElementById("saveToLocalBtn").addEventListener("click", function () {
+            var notifications = @Html.Raw(Json.Serialize(ViewBag.Notifications));
+            saveNotificationData(notifications);
+        });
+
+        // Call the function to display notification data when the page loads
+        displayNotificationData();
+    </script>
+}
+
+

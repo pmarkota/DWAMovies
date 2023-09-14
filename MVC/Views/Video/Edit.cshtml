@@ -1,0 +1,46 @@
+﻿@model DAL.BLModels.BLVideo
+@{
+    ViewData["Title"] = "Edit";
+    Layout = ViewContext.HttpContext.Session.GetString("AuthToken") == null ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    var images = ViewData["images"] as List<DAL.BLModels.BLImage>;
+    var image = images.FirstOrDefault(i => i.Id == Model.ImageId);
+}
+
+<h1>Edit Video</h1>
+<img src="@image.Content"/>
+<div class="container">
+    <form method="post" asp-controller="Video" asp-action="Edit" asp-route-id="@Model.Id">
+        <div class="form-group">
+            <label for="Name">Name</label>
+            <input type="text" id="Name" name="Name" value="@Model.Name" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="Description">Description</label>
+            <textarea id="Description" name="Description" class="form-control">@Model.Description</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="GenreId">Genre</label>
+            <input type="number" id="GenreId" name="GenreId" value="@Model.GenreId" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="TotalSeconds">Total Seconds</label>
+            <input type="number" id="TotalSeconds" name="TotalSeconds" value="@Model.TotalSeconds" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="StreamingUrl">Streaming URL</label>
+            <input type="url" id="StreamingUrl" name="StreamingUrl" value="@Model.StreamingUrl" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="ImageId">Image ID</label>
+            <input type="number" id="ImageId" name="ImageId" value="@Model.ImageId" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
